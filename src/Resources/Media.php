@@ -26,6 +26,21 @@ class Media extends Resource
         return 'dmitrybubyakin-nova-medialibrary-media';
     }
 
+    public static function newModel()
+    {
+        if (! nova_request()->viaResource()) {
+            return parent::newModel();
+        }
+
+        $viaResource = nova_request()->newViaResource();
+
+        if (method_exists($viaResource, 'provideMediaModel')) {
+            return $viaResource->provideMediaModel() ?: parent::newModel();
+        }
+
+        return parent::newModel();
+    }
+
     public function fields(NovaRequest $request): array
     {
         $viaResource = $request->input('viaResource');
